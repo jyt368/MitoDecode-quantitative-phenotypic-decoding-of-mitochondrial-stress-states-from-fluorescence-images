@@ -1,4 +1,4 @@
-# MitoDecode-quantitative-phenotypic-decoding-of-mitochondrial-stress-states-from-fluorescence-images
+# MitoDecode: quantitative phenotypic decoding of mitochondrial stress states from fluorescence images
 
 MitoDecode take fluorescence mitochondria images of individual cell directly as input and does not require individual mitochondria segmentation or predefined mitochondrial morphological parameters for analysis. It gives individual cell a health/stress probability profile to indicate the health state, stress type, and stress severity of a cell.
 
