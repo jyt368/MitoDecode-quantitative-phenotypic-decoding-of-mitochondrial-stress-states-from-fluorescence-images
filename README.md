@@ -17,7 +17,9 @@ We designed a hybrid deep learning architecture that combines ResNet50 backbone 
 backbone: ResNet50 <br>
 transformer_layers: 4 <br>
 num_classes: 4 / 6 (non-mitochondrial stressors) <br>
-optimizer: ... <br>
+Optimizer: AdamW <br>
+Loss: Cross-entropy loss with label smoothing = 0.1 <br>
+Learning-rate scheduler: StepLR <br>
 learning_rate: 1e-4 <br>
 batch_size: 16 <br>
 epochs: 20
