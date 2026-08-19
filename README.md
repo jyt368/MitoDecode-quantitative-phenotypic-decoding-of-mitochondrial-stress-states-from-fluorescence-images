@@ -14,11 +14,18 @@ We designed a hybrid deep learning architecture that combines ResNet50 backbone 
 
 <img width="797" height="540" alt="image" src="https://github.com/user-attachments/assets/2d846b99-47ab-4336-b749-ad6f52fe54d8" />
 
-backbone: ResNet50
-transformer_layers: 4
-num_classes: 4 / 6 (non-mitochondrial stressors)
-optimizer: ...
-learning_rate: 1e-4
-batch_size: 16
+backbone: ResNet50 <br>
+transformer_layers: 4 <br>
+num_classes: 4 / 6 (non-mitochondrial stressors) <br>
+optimizer: ... <br>
+learning_rate: 1e-4 <br>
+batch_size: 16 <br>
 epochs: 20
-4. 
+
+3. Model training and fine-tuning
+The initial MitoDecode model was trained using COS-7 mitochondrial fluorescence images under four different biological states: control, FCCP-induced stress, H₂O₂-induced stress and heat-shock stress. Cells with abnormal imaging artefacts were excluded.
+
+MitoDecode can be adapted to new cell types, stress types, and imaging modalities through supervised fine-tuning. Models were fine-tuned using small number of new condition images based on the initially trained model rather than training from scratch.
+
+4. Installations
+5. Example usage
