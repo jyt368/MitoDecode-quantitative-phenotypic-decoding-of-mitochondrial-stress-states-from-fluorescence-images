@@ -31,3 +31,5 @@ MitoDecode can be adapted to new cell types, stress types, and imaging modalitie
 
 4. Installations
 5. Example usage
+<img width="1192" height="821" alt="image" src="https://github.com/user-attachments/assets/e971d626-68d9-40cd-bf80-2bff271bc465" />
+
