@@ -30,6 +30,10 @@ The initial MitoDecode model was trained using COS-7 mitochondrial fluorescence 
 MitoDecode can be adapted to new cell types, stress types, and imaging modalities through supervised fine-tuning. Models were fine-tuned using small number of new condition images based on the initially trained model rather than training from scratch.
 
 4. Installations
-5. Example usage
+Python 3.12.1
+The environmental setting are included as requirements.txt
+run:  python GUI.py  to launch the interface for example single-cell prediction
+
+6. Example usage
 <img width="1192" height="821" alt="image" src="https://github.com/user-attachments/assets/e971d626-68d9-40cd-bf80-2bff271bc465" />
 
