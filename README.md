@@ -2,7 +2,7 @@
 
 MitoDecode take fluorescence mitochondria images of individual cell directly as input and does not require individual mitochondria segmentation or predefined mitochondrial morphological parameters for analysis. It gives individual cell a health/stress probability profile to indicate the health state, stress type, and stress severity of a cell.
 
-<img width="894" height="368" alt="image" src="https://github.com/user-attachments/assets/572e7e59-800a-44ad-91fd-ed4a00b51370" />
+           <img width="894" height="368" alt="image" src="https://github.com/user-attachments/assets/572e7e59-800a-44ad-91fd-ed4a00b51370" />
 
 1. Image preprocessing
 
@@ -12,7 +12,8 @@ For single-cell analysis, images are first processed to generate a individual ce
 
 We designed a hybrid deep learning architecture that combines ResNet50 backbone with a Transformer encoder. This architecture took advantages of convolutional layers to extract diverse features maps from images, as well as the Transformer self-attention part to captures spatial relationships of overall mitochondria network. The feature representation from ResNet50 backbone is converted into image patches and processed by positional encoding and Transformer encoder layers to capture global morphological relationships across the cell. The final representation is passed through a fully connected (FC) layer and converted into a phenotypic probability profile. Each dimension corresponds to one specific stress phenotype represented in the training reference space.
 
-<img width="960" height="272" alt="image" src="https://github.com/user-attachments/assets/8bd28600-4f2f-4fae-a20c-3ac9fef4317b" />
+         <img width="960" height="272" alt="image" src="https://github.com/user-attachments/assets/8bd28600-4f2f-4fae-a20c-3ac9fef4317b" />
+
 
 backbone: ResNet50 <br>
 transformer_layers: 4 <br>
