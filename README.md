@@ -36,6 +36,7 @@ The environmental setting are included as requirements.txt
 run:  python GUI.py  to launch the interface for example single-cell prediction
 
 6. Example usage
-<img width="1204" height="828" alt="image" src="https://github.com/user-attachments/assets/0356ecb6-ff7c-42e1-854f-e95f5f0bf047" />
+<img width="1198" height="824" alt="image" src="https://github.com/user-attachments/assets/0724e835-c7ce-49ab-988a-7b7883bd49aa" />
+
 
 
