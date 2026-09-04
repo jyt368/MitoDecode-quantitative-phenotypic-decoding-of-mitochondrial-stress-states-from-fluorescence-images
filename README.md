@@ -12,7 +12,6 @@ For single-cell analysis, images are first processed to generate a individual ce
 
 We designed a hybrid deep learning architecture that combines ResNet50 backbone with a Transformer encoder. This architecture took advantages of convolutional layers to extract diverse features maps from images, as well as the Transformer self-attention part to captures spatial relationships of overall mitochondria network. The feature representation from ResNet50 backbone is converted into image patches and processed by positional encoding and Transformer encoder layers to capture global morphological relationships across the cell. The final representation is passed through a fully connected (FC) layer and converted into a phenotypic probability profile. Each dimension corresponds to one specific stress phenotype represented in the training reference space.
 
-<img width="797" height="540" alt="image" src="https://github.com/user-attachments/assets/2d846b99-47ab-4336-b749-ad6f52fe54d8" />
 
 backbone: ResNet50 <br>
 transformer_layers: 4 <br>
