@@ -1,0 +1,3 @@
+Model architecture contains ResNet50 bottleneck and self-attention blocks from transformer structure. The layer depth and class number can be modified according to user requirements.
+Data handler could process the data acquired from users, and contains data augmentation for training data and normal data processing into tensor types for validation data and test data. The labels can be changed according to user requirements for new model training.
+The training.py is available if user want to train their customised model. And it's also possible to easily add their cutom-trained model into the GUI through GUI.py with new layer depth and class number being stated.
