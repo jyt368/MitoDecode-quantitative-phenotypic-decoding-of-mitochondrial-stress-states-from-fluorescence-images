@@ -1,0 +1,734 @@
+//@Boolean(label="Batch?", value=false) batch
+//@Boolean(label="Channels from filename", value=true) autoChannels
+//@String(label="Lens", choices={"60X Water", "100X Oil"}) lens
+//@Boolean(label="\"TIRF\"?", value=false) tirf
+//@Boolean(label="Run SIM reconstruction", value=true) sim
+//@Integer(label="Slice for parameters (1-indexed, 0=all)", value=0) paramSlice
+//@Boolean(label="Correct illumination?", value=true) correctIllumination
+//@String(label="Filter type", choices={"Wiener out", "RL out", "RL in, Wiener out", "RL in, RL out"}) filter
+//@Double(label="WienerParameter", value=0.05) wienerParameter
+//@Double(label="Apodisation cutoff", value=2) apoCutoff
+//@Double(label="Apodisation strength", value=0.9) apoBend
+//@Integer(label="Richardson-Lucy steps", value=5) rlSteps
+//@Boolean(label="OTF attenuation", value=false) otfAttenuation
+//@Double(label="Attenuation strength", value=0.995) attenStrength
+//@Double(label="Attenuation FWHM", value=1.2) attenFWHM
+//@String(label="Clipping", choices={"Don't clip", "Clip zeros", "Clip and scale (timelapse)"}) clip
+//@Boolean(label="Run widefield reconstruction", value=true) widefield
+//@Boolean(label="Register images", value=false) register
+//@Boolean(label="Optosplit", value=false) optosplit
+//@Boolean(label="Timelapse mode", value=false) timelapseCapture
+//@Boolean(label="Even more options!", value=false) moreoptions
+
+// fairSIM Reconstruction with parameters for LAG-SIM
+
+
+//// IMPORT PACKAGES
+// ImageJ components
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.measure.Calibration;
+import ij.plugin.HyperStackConverter;
+import ij.plugin.ZProjector;
+import ij.Prefs;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;	
+import ij.io.DirectoryChooser;
+import ij.gui.GenericDialog;
+import ij.gui.NonBlockingGenericDialog;
+import ij.gui.MessageDialog;
+
+// FairSIM components
+import org.fairsim.sim_algorithm.SimAlgorithm;
+import org.fairsim.sim_algorithm.SimParam;
+import org.fairsim.sim_algorithm.SimParam.FilterStyle;
+import org.fairsim.sim_algorithm.SimUtils;
+import org.fairsim.sim_algorithm.OtfProvider;
+import org.fairsim.fiji.DisplayWrapper;
+import org.fairsim.utils.ImageDisplay;
+import org.fairsim.linalg.Vec2d;
+
+// output tools
+import org.fairsim.utils.Tool;
+import loci.plugins.BF;
+
+// array tools
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import org.apache.commons.io.FileUtils;
+
+// Swing components (for progress bars)
+import javax.swing.JDialog;
+import javax.swing.JProgressBar;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+//// END OF IMPORTS
+
+
+
+//// HELPER FUNCTIONS
+// Extract channels and channel order from filename
+int[] getChannelOrder(String filename) {
+	// Ugly helper code for getting channel order from filename
+
+	// First, look for "488", "561/568", "640/647" in filename
+	int ch488 = filename.indexOf("488");
+	int ch561 = filename.indexOf("561");
+		if (ch561 == -1){ch561 = filename.indexOf("568");}
+	int ch640 = filename.indexOf("640");
+		if (ch640 == -1){ch640 = filename.indexOf("647");}
+
+	// Work out order of channels
+	Integer[] channelOrderArray = {ch488, ch561, ch640};
+	
+	ArrayList arrayList = new ArrayList();
+	for (int i = 0; i < 3; i++) {
+		if (channelOrderArray[i] > -1) {
+			arrayList.add(channelOrderArray[i]);
+		}
+	}
+	
+	Collections.sort(arrayList);
+	for (int i = 0; i < arrayList.size(); i++) {
+		arrayList.set(i, Arrays.asList(channelOrderArray).indexOf(arrayList.get(i))+4);
+	}
+	
+	int[] ret = new int[arrayList.size()];
+	for (int i = 0;i < ret.length; i++) {
+	    ret[i] = arrayList.get(i);
+	}
+	return ret;
+}
+
+// Extract z-stack information from filename
+double getZStepFromFilename(String filename){
+	// Equally ugly code for assessing z-step i.e. voxel depth
+	double zStep = 0.0;
+	String depthRegex = "[x][0-9]+[0-9]+[u][m]|[x][0-9]+.[0-9]+[u][m]";
+	Pattern depthP = Pattern.compile(depthRegex);
+	Matcher depthM = depthP.matcher(filename);
+	if (depthM.find()) {
+		String matched = depthM.group();
+		int xLoc = matched.indexOf("x");
+		int umLoc = matched.indexOf("um");
+		String depthStr = matched.substring(xLoc+1, umLoc);
+		zStep = Double.parseDouble(depthStr);
+	}
+	return zStep;
+}
+//// END OF HELPER FUNCTIONS
+
+
+//// SCRIPT BEGINS HERE
+// Set up 'more options' dialog
+boolean otfBeforeShift = false;    // There seems to be a bug when this is true... 
+boolean debug = false;
+
+if (moreoptions){
+	GenericDialog gd = new GenericDialog("More options...");
+	gd.addCheckbox("Show debug results?", false);
+	gd.addCheckbox("Apply OTF before shift", false);
+	gd.showDialog();
+	
+	if(gd.wasCanceled())
+		return;
+
+	debug = gd.getNextBoolean();
+	otfBeforeShift = gd.getNextBoolean();
+}
+		
+// Most parameters now come in from dialog box, but we still need to parse a few:
+FilterStyle filterStyle = SimParam.FilterStyle.Wiener; // Wiener: use Wiener filter on output; RLin: Richardson-Lucy on input, Wiener on output; RLout: RL on output; RLboth: RL on input and output
+switch(filter){
+	case "Wiener out":
+		filterStyle = SimParam.FilterStyle.Wiener;
+	break;
+	case "RL in, Wiener out":
+		filterStyle = SimParam.FilterStyle.RLin;
+	break;
+	case "RL out":
+		filterStyle = SimParam.FilterStyle.RLout;
+	break;
+	case "RL in, RL out":
+		filterStyle = SimParam.FilterStyle.RLboth;
+	break;
+}
+		
+// fairSIM pattern-finding parameters
+int fitBand = 1;
+boolean coarsePeakFit = false;	
+double fitExclude = 0.4;		// freq. region (DC) to ignore when search for k0, in fraction of OTF cutoff
+
+// Microscope parameters - default for 60X water
+double otfNA     = 1.2;	// NA
+double otfCorr   = 0.3;	// compensation
+int imgSize = 512;		// width & height of image
+double pxlSize = 0.108;	// pixel size in micron
+double background = 1; // background subtraction. Not sure what to do about this one!! 
+
+switch(lens){
+	case "60X Water":
+		otfNA = 1.2;
+		pxlSize = 0.1075;
+	break;
+	case "100X Oil":
+		oftNA = 1.49;
+		pxlSize = 0.063;
+	break;
+}
+		
+// SIM reconstruction parameters
+int nrBands = 2;		// #SIM bands
+int nrAng   = 3;		// #angles
+int nrPha   = 3;		// #phases
+
+SimParam.CLIPSCALE clipscale;
+switch(clip){
+	case "Don't clip":
+	clipscale = SimParam.CLIPSCALE.NONE;
+	break;
+	case "Clip zeros":
+	clipscale = SimParam.CLIPSCALE.CLIP;
+	break;
+	case "Clip and scale (timelapse)":
+	clipscale = SimParam.CLIPSCALE.BOTH;
+	break;
+}
+
+// Set up image registration
+double[] xShift = new double[]{0,0,0};
+double[] yShift = new double[]{0,0,0};
+if (register){
+	String x1Pref = Prefs.get("lagsim.regx1", "0");
+	String y1Pref = Prefs.get("lagsim.regy1", "0");
+	String x2Pref = Prefs.get("lagsim.regx2", "0");
+	String y2Pref = Prefs.get("lagsim.regy2", "0");
+	
+	GenericDialog dlg = new GenericDialog("Registration parameters");
+	dlg.addNumericField("Channel 1 -> Channel 0 x (widefield shift)", Double.parseDouble(x1Pref), 1);
+	dlg.addNumericField("Channel 1 -> Channel 0 y (widefield shift)", Double.parseDouble(y1Pref), 1);
+	dlg.addNumericField("Channel 2 -> Channel 0 x (widefield shift)", Double.parseDouble(x2Pref), 1);
+	dlg.addNumericField("Channel 2 -> Channel 0 y (widefield shift)", Double.parseDouble(y2Pref), 1);
+	dlg.showDialog();
+	
+	if(dlg.wasCanceled())
+		return;
+	
+	xShift[1] = dlg.getNextNumber(); Prefs.set("lagsim.regx1", xShift[1].toString());
+	yShift[1] = dlg.getNextNumber(); Prefs.set("lagsim.regy1", yShift[1].toString());
+	xShift[2] = dlg.getNextNumber(); Prefs.set("lagsim.regx2", xShift[2].toString());
+	yShift[2] = dlg.getNextNumber(); Prefs.set("lagsim.regy2", yShift[2].toString());
+}
+
+// Log fairSIM output in the FIJI log
+Tool.setLogger( new Tool.Logger() {
+	public void writeTrace(String w) {
+		IJ.log("-fs- "+w);		
+	}
+	public void writeError(String e) {
+		IJ.log("fs ERR: "+e);
+	}
+	public void writeShortMessage(String s) {
+		IJ.showStatus(s);
+	}
+});
+
+// Uncomment lines for visual feedback
+int visualFeedback = -1;
+ImageDisplay.Factory idf = null;
+
+if (debug){
+	visualFeedback = 3; 
+	idf = DisplayWrapper.getFactory();
+}
+
+// Get file list
+File[] fileList = new File[1];
+if (batch){
+	String dir = new DirectoryChooser("Select a folder of images or subfolders").getDirectory();
+	if (dir == null)
+		break;
+	Collection fileCollection = FileUtils.listFiles(new File(dir), new String[]{"cxd"}, true);
+	fileList = FileUtils.convertFileCollectionToFileArray(fileCollection);
+}
+
+// Set up progress bar
+long startTime = System.currentTimeMillis();
+JDialog progDlg = new JDialog(null, "LAG-SIM reconstruction progress", false);
+JPanel progPanel = new JPanel();
+JLabel imageLabel = new JLabel("Image progress");
+JLabel totalLabel = new JLabel("Total progress: time remaining is ~10,000 seconds.");
+
+JProgressBar imageProgress = new JProgressBar(0,1000);
+JProgressBar totalProgress = new JProgressBar(0,1000);
+imageProgress.setStringPainted(true);
+totalProgress.setStringPainted(true);
+
+progPanel.setLayout(new BoxLayout(progPanel, BoxLayout.Y_AXIS));
+progPanel.add(imageLabel);
+progPanel.add(imageProgress);
+progPanel.add(totalLabel);
+progPanel.add(totalProgress);
+
+progDlg.add(progPanel, BorderLayout.CENTER);
+progDlg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE); // prevent the user from closing the dialog
+
+progDlg.pack();
+totalLabel.setText("Total progress");
+progDlg.setLocationRelativeTo(null);
+progDlg.setVisible(true);
+
+// Loop over all files - or just work on the active image, if not batch
+for (int f = 0; f < fileList.length; f++){
+	ImagePlus iPl;
+
+	if (batch){
+		ImagePlus[] imps = BF.openImagePlus(fileList[f].toString());
+		iPl = imps[0];
+	} else {
+		iPl = ij.WindowManager.getCurrentImage();
+	}
+
+	// Get information about this image
+	String titlename = iPl.getTitle();
+	String filename = ""; 
+	Calibration cal = iPl.getCalibration();
+	int[] channelOrder = {};
+
+	double pixelDepth = cal.getZ(1); // Might not return in um though... 
+	if (autoChannels){
+		filename = iPl.getOriginalFileInfo().directory + iPl.getOriginalFileInfo().fileName;	
+		pixelDepth = getZStepFromFilename(filename);
+		channelOrder = getChannelOrder(filename);
+		if (channelOrder.length == 0){
+			channelOrder = getChannelOrder(titlename);
+		}
+		if (filename.toLowerCase().indexOf("tsim") > -1 || filename.toLowerCase().indexOf("tirf") > -1 ||
+			titlename.toLowerCase().indexOf("tsim") > -1 || titlename.toLowerCase().indexOf("tirf") > -1){
+				tirf = true;
+			}
+	}
+	
+	if (optosplit){
+		iPl.setRoi(1452, 0, 512, 512);
+		ImagePlus pl488 = iPl.duplicate();
+		iPl.setRoi(815, 0, 512, 512);
+		ImagePlus pl561 = iPl.duplicate();
+		iPl.setRoi(160, 0, 512, 512);
+		ImagePlus pl640 = iPl.duplicate();
+		iPl.setRoi(0,0,0,0);
+
+		ImageStack osStack = new ImageStack(512, 512);
+		for (int i = 0; i < iPl.getStackSize(); i = i+9){
+			print(i);
+			for (int j=0; j<9; j++){
+				pl488.setSliceWithoutUpdate(i+j);
+				osStack.addSlice(pl488.getProcessor());
+			}
+			for (int j=0; j<9; j++){
+				pl561.setSliceWithoutUpdate(i+j);
+				osStack.addSlice(pl561.getProcessor());
+			}
+			for (int j=0; j<9; j++){
+				pl640.setSliceWithoutUpdate(i+j);
+				osStack.addSlice(pl640.getProcessor());
+			}
+		}
+
+		iPl = iPl.createImagePlus();
+		iPl.setStack(osStack);
+		channelOrder = new int[]{4, 5, 6};
+	}
+
+	// Check image is good for processing
+	int numChannels = channelOrder.length;
+	if (numChannels==0  || !autoChannels){
+		if (!batch){
+			// Get channel order manually
+			GenericDialog chDlg = new GenericDialog("Enter channel order manually");
+			String[] choiceString = new String[]{"None", "488", "561", "640"};
+			chDlg.addChoice("Channel 0", choiceString, choiceString[0]);
+			chDlg.addChoice("Channel 1", choiceString, choiceString[0]);
+			chDlg.addChoice("Channel 2", choiceString, choiceString[0]);
+			chDlg.showDialog();
+	
+			if(chDlg.wasCanceled())
+				continue;
+
+			String channelOrderString = chDlg.getNextChoice() + chDlg.getNextChoice() + chDlg.getNextChoice();
+			channelOrder = getChannelOrder(channelOrderString);
+			numChannels = channelOrder.length;
+		} else {
+			// Skip to next image in batch
+			continue;
+		}
+	}
+	
+	int numSlices = iPl.getStackSize() / 9.0 / numChannels;
+	if ((float)numSlices != (float)iPl.getStackSize() / 9.0f / (float)numChannels){
+		if (!batch){
+			// Give up if this doesn't look like a SIM stack
+			MessageDialog completeDlg = new MessageDialog(null, "Raw data stack size error!", "Raw data has the wrong number of frames for a " + numChannels + "-channel SIM stack!");
+		}
+		// Skip to next image in batch
+		continue;
+	}
+
+
+	// SIM RECON
+	if(sim){
+		ImageStack outputStack = new ImageStack(imgSize*2, imgSize*2);
+		for (int c = 0; c < numChannels; c++) {		
+			double emWavelen;
+			double px1, py1, px2, py2, px3, py3; // Coarse parameters
+	
+			switch(channelOrder[c]){
+				case 4: // 488nm
+					emWavelen = 525; 
+					if (timelapseCapture){
+					    px1 = -0.056;
+					    py1 = -114.567;
+					    px2 = 99.744;
+					    py2 = 57.189;
+					    px3 = -99.811;
+					    py3 = 57.389;
+					} else if(tirf){
+						px1 = 150.8; 
+						py1 = -2.08;
+						px2 = -73.5;
+						py2 = 132.2;
+						px3 = -77.3;
+						py3 = -130.1;
+					} else {
+					    px1 = -146.278;
+					    py1 = 0.399;
+					    px2 = 72.7;
+					    py2 = -127.5;
+					    px3 = 73.7;
+					    py3 = 129.744;
+					}
+				break;
+				case 5: // 561nm
+					emWavelen = 600;
+					if (timelapseCapture){
+					    px1 = -0.056;
+					    py1 = -114.567;
+					    px2 = 99.744;
+					    py2 = 57.189;
+					    px3 = -99.811;
+					    py3 = 57.389;
+					} else {
+					    px1 = -146.278;
+					    py1 = 0.25;
+					    px2 = 72.7;
+					    py2 = -126.9;
+					    px3 = 73.3;
+					    py3 = 126.6;
+					}
+				break;
+				case 6: // 640nm
+					emWavelen = 676;
+					if (optosplit){
+					    px1 = 114.522;
+					    py1 = -0.078;
+					    px2 = -57.056;
+					    py2 = 99.833;
+					    px3 = -57.056;
+					    py3 = -99.744;
+					} else if (timelapseCapture){
+					    px1 = 0.033;
+					    py1 = -91.589;
+					    px2 = 79.811;
+					    py2 = 45.722;
+					    px3 = -79.789;
+					    py3 = 45.922;
+					} else if (tirf){
+						px1 = 113.0;
+						py1 = -1.1;
+						px2 = -55.9;
+						py2 = 99.5;
+						px3 = -57.1;
+						py3 = -98.4;
+					} else {
+					    px1 = -117;
+					    py1 = 0;
+					    px2 = 59;
+					    py2 = -101;
+					    px3 = 58;
+					    py3 = 101;
+					}
+				break;
+			}
+
+			OtfProvider otf   = OtfProvider.fromEstimate( otfNA, emWavelen, otfCorr );
+			SimParam simParam = SimParam.create( nrBands, nrAng, nrPha, imgSize, pxlSize, otf );
+			if (paramSlice > 0){ // Then calculate sim parameters from specified slice
+				// Calculate sim parameters from 'parameter slice'
+				ImageStack iStParam = new ImageStack(imgSize, imgSize);
+				int paramStartSlice = (paramSlice-1) * numChannels * 9 + c * 9;
+				for (int i = 0; i < 9; i++) {
+					iStParam.addSlice(iPl.getStack().getProcessor(1+i+paramStartSlice)); // getProcessor is 1-indexed...
+				}
+
+				// copy raw data, window, fft
+				Vec2d.Cplx [][] rawImages = new Vec2d.Cplx[nrAng][nrPha];
+				
+				for (int a = 0; a<nrAng; a++) {
+					for (int p=0; p<nrPha; p++) {
+				
+						// get the current image as 16bit short
+						short [] curImg = (short[])iStParam.getProcessor( a*nrPha + p + 1 ).convertToShortProces+sor().getPixels();
+					
+						// copy to a complex-value vector
+						rawImages[a][p] = Vec2d.createCplx( imgSize, imgSize );
+						rawImages[a][p].setFrom16bitPixels( curImg );
+				
+						// subtract background, window, fft
+						double pc = SimUtils.subtractBackground( rawImages[a][p], background );
+						
+						SimUtils.fadeBorderCos( rawImages[a][p], 15);
+						rawImages[a][p].fft2d(false);
+						
+						Tool.trace("fft'd input "+a+" "+p+", subtracted background, % pixels clipped: "+pc*100);
+					}
+				}
+				
+				// Set initial guesses for parameters
+				simParam.dir(0).setPxPy(px1, py1);
+			    simParam.dir(1).setPxPy(px2, py2);
+			    simParam.dir(2).setPxPy(px3, py3);
+	
+				// Get sim parameters
+				SimAlgorithm.estimateParameters( simParam, rawImages, fitBand, -1, idf, visualFeedback, null);
+
+				// Examine modulation index
+				if (!batch && paramSlice != 0){
+					double mod0 = simParam.dir(0).getRawModulations()[1];
+					double mod1 = simParam.dir(1).getRawModulations()[1];
+					double mod2 = simParam.dir(2).getRawModulations()[1];
+	
+					String modStr = "\nModulation dir1: " + String.format("%.2f", new Object[]{new Double(mod0)}) + "\nModulation dir2: " + String.format("%.2f", new Object[]{new Double(mod1)}) + "\nModulation dir3: " + String.format("%.2f", new Object[]{new Double(mod2)});
+					
+					if (mod0 < 0.5 || mod1 < 0.5 || mod2 < 0.5){
+						modStr = "Modulation depth looks quite low. Continue? \n" + modStr;
+						
+						GenericDialog modd = new GenericDialog("Modulation information");
+						modd.addMessage(modStr);
+						modd.showDialog();
+						
+						if(modd.wasCanceled())
+							return;
+					} else {
+						// Non-blocking dialog
+						Thread t = new Thread(new Runnable(){
+				        	public void run(){
+				            	new MessageDialog(null, "Modulation information", modStr);
+				        	}
+				    	});
+				  		t.start();
+					}
+				}
+				
+			}
+
+			// Reconstruct the whole stack for this colour
+			for (int s = 0; s < numSlices; s++) {				
+				int startSlice = s * numChannels * 9 + c * 9;
+				ImageStack iSt = new ImageStack(imgSize, imgSize);
+				double[] means = new double[9];
+				for (int i = 0; i < 9; i++) {
+					ImageProcessor iP = iPl.getStack().getProcessor(1+i+startSlice);  // getProcessor is 1-indexed...
+					iSt.addSlice(iP);
+					means[i] = ImageStatistics.getStatistics(iP).mean;
+				}
+
+				if (correctIllumination){
+					// Angle by angle
+					for (int a = 0; a<nrAng; a++){
+						double sum = 0;
+						for (int p = 0; p<nrPha; p++){
+							double sliceMean = means[a*nrAng+p]/means[0];
+							simParam.dir(a).setPhaseIntensityFactor(p, sliceMean);
+							sum += sliceMean;
+						}
+						angleMean = sum/3;
+						simParam.dir(a).setAngleIntensityFactor(angleMean);
+					}
+				}
+				
+				if (iSt.size() != nrAng * nrPha ) {
+					Tool.error("ang*pha = stack length",true);
+					return;
+				}
+				
+				// copy raw data, correct, window, fft
+				Vec2d.Cplx [][] rawImages = new Vec2d.Cplx[nrAng][nrPha];
+				
+				for (int a = 0; a<nrAng; a++) {
+					for (int p=0; p<nrPha; p++) {
+				
+						// get the current image as 16bit short
+						short [] curImg = (short[])iSt.getProcessor( a*nrPha + p + 1 ).convertToShortProcessor().getPixels();
+					
+						// copy to a complex-value vector
+						rawImages[a][p] = Vec2d.createCplx( imgSize, imgSize );
+						rawImages[a][p].setFrom16bitPixels( curImg );
+				
+						// subtract background, window, fft
+						double pc = SimUtils.subtractBackground( rawImages[a][p], background );
+						
+						SimUtils.fadeBorderCos( rawImages[a][p], 15);
+						rawImages[a][p].fft2d(false);
+						
+						Tool.trace("fft'd input "+a+" "+p+", subtracted background, % pixels clipped: "+pc*100);
+					}
+				}
+				
+				// run the parameter fit
+				if (paramSlice==0) {
+				
+					// if we run w/o coarse peak fit, we need to set some starting guess for k0	
+					simParam.dir(0).setPxPy(px1, py1);
+				    simParam.dir(1).setPxPy(px2, py2);
+				    simParam.dir(2).setPxPy(px3, py3);
+					
+					SimAlgorithm.estimateParameters( simParam, rawImages, fitBand, -1, idf, visualFeedback, null);
+				}
+				
+				// RUN THE RECONSTRUCTION!
+				// Set attenuation 
+				otf.setAttenuation( attenStrength, attenFWHM );   // set strength (0..1) and FWHM (in 1/micron) of OTF attenuation
+				otf.switchAttenuation( otfAttenuation );      // important: has to be 'true', otherwise no attenuation gets used
+	
+				// Set apodisation
+				simParam.setApoCutoff( apoCutoff );       // cutoff of apodization
+				simParam.setApoBend( apoBend );         // exponent of apodization 
+	
+				// Set deconvolution
+				simParam.setWienerFilter( wienerParameter );   // wiener filter parameter
+				simParam.setRLiterations( rlSteps );
+				simParam.setFilterStyle( filterStyle );
+								
+				Vec2d.Real result = SimAlgorithm.runReconstruction( simParam, rawImages, idf, visualFeedback, 
+					otfBeforeShift, clipscale, null);
+				
+				// 'result' now contains the reconstructed image.
+				float [] res = result.vectorData();
+				FloatProcessor fp = new FloatProcessor(2*imgSize, 2*imgSize, res);
+				fp.translate(2.0*xShift[c], 2.0*yShift[c]);
+				outputStack.addSlice("Channel " + c + ", Slice " + s + " - fairSIM output", fp);
+
+				// Update progress bars
+				int imageProgressI = (int)(1000.0 * (((double)(s+1)/(double)numSlices) + (double)c)/(double)numChannels);
+				int totalProgressI = (int)(1000.0 * (((((double)(s+1)/(double)numSlices) + (double)c)/(double)numChannels) + (double)(f))/(double)fileList.length);
+				imageProgress.setValue(imageProgressI);
+				totalProgress.setValue(totalProgressI);
+				// Update time remaining
+				double slicesComputed = s+1 + numSlices * c + numChannels * numSlices * f;
+				double averageTimePerSlice = (System.currentTimeMillis()-startTime)/slicesComputed;
+				double slicesRemaining = fileList.length * numChannels * numSlices - slicesComputed;
+				int remainingTime = (int)(averageTimePerSlice * slicesRemaining / 1000);
+				String remainingString = String.format("Total progress: time remaining is ~%,d seconds. ", new Object[]{new Integer(remainingTime)});
+				totalLabel.setText(remainingString);
+			}
+		}
+	
+		String outputTitle = (numChannels == 1 || register) ? (titlename + " - fairSIM image") : (titlename + " - fairSIM image - unregistered");
+		ImagePlus outPl = new ImagePlus(outputTitle, outputStack);
+
+		// Order stack into full-color hyperstack
+		ImagePlus SIMpl;
+		if (outPl.getImageStackSize()>1){
+			if (pixelDepth>0.0){
+				SIMpl = HyperStackConverter.toHyperStack(outPl, numChannels, numSlices, 1, "xyztc", "Composite");
+			} else {
+				SIMpl = HyperStackConverter.toHyperStack(outPl, numChannels, 1, numSlices, "xytzc", "Composite");
+			}
+		} else {
+			SIMpl = outPl;
+		}
+	
+		cal.setUnit("micron");
+		cal.pixelWidth = pxlSize/2.0;
+		cal.pixelHeight = pxlSize/2.0;
+		cal.pixelDepth = pixelDepth;
+		SIMpl.setCalibration(cal);
+		
+		if (batch){
+			String savepath = filename + "-fairSIM.tif";
+			IJ.saveAsTiff(SIMpl,savepath);
+
+			// And update progress bar 
+			int remainingTime = (int)(((System.currentTimeMillis() - startTime)/(f+1))*(fileList.length-(f+1))/1000);
+			String remainingString = String.format("Total progress: time remaining is ~%,d seconds. ", new Object[]{new Integer(remainingTime)});
+			totalLabel.setText(remainingString);
+		} else {
+			SIMpl.show();
+		}
+	}
+
+
+	// WIDEFIELD RECON
+	if (widefield){
+		ImagePlus tmp = iPl.duplicate();
+		ImagePlus hyper = HyperStackConverter.toHyperStack(tmp, numChannels, 9, numSlices, "xyzct", "Composite");
+		
+		// Do z-projection
+		ZProjector projector = new ZProjector();
+		projector.setImage(hyper);
+		projector.setStartSlice(1);
+		projector.setStopSlice(9);
+		projector.setMethod(ZProjector.AVG_METHOD);
+		projector.doHyperStackProjection(true);
+		ImagePlus widepl = projector.getProjection();
+
+		// Register
+		for (int c = 0; c < numChannels; c++){
+			for (int s = 0; s < numSlices; s++){
+				int n = widepl.getStackIndex(c+1, 1, s+1);
+				widepl.setSliceWithoutUpdate(n);
+				widepl.getProcessor().translate(xShift[c], yShift[c]);
+			}
+		}
+		
+		if (pixelDepth>0.0 && widepl.getImageStackSize() > 1){
+			widepl = HyperStackConverter.toHyperStack(widepl, numChannels, numSlices, 1, "xyczt", "Composite");
+		}
+		
+		// Set output image properties, and show
+		String outputTitle = (numChannels == 1 || register) ? (titlename + " - widefield image") : (titlename + " - widefield image - unregistered");
+		widepl.setTitle(outputTitle);
+		cal.setUnit("micron");
+		cal.pixelWidth = pxlSize;
+		cal.pixelHeight = pxlSize;
+		cal.pixelDepth = pixelDepth;
+		widepl.setCalibration(cal);
+		if (batch){
+			String savepath = filename + "-widefield.tif";
+			IJ.saveAsTiff(widepl, savepath);
+
+			// If we're in batch mode, we should update the file complete dialog box
+			int totalProgressI = (int)(1000.0 * (double)(f+1)/(double)fileList.length);
+			totalProgress.setValue(totalProgressI);
+			int remainingTime = (int)(((System.currentTimeMillis() - startTime)/(f+1))*(fileList.length-(f+1))/1000);
+			String remainingString = String.format("Total progress: time remaining is ~%,d seconds. ", new Object[]{new Integer(remainingTime)});
+			totalLabel.setText(remainingString);
+			
+		} else {
+			widepl.show();
+		}
+	}
+}
+
+progDlg.dispose();
+
+if(batch){
+	int completeTime = (int)((System.currentTimeMillis() - startTime)/1000);
+	String completeString = String.format("Batch job completed in %,d seconds.", new Object[]{new Integer(completeTime)});
+	MessageDialog completeDlg = new MessageDialog(null, "Complete!", completeString);
+}
