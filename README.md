@@ -54,7 +54,7 @@ This GUI allows users to select one of our pretrained model, which can be downlo
 
 
 6. Example usage
-<img width="544" height="375" alt="image" src="https://github.com/user-attachments/assets/fc1f338b-6565-4046-95eb-33ccaebe5ec4" />
+<img width="816" height="563" alt="image" src="https://github.com/user-attachments/assets/fc1f338b-6565-4046-95eb-33ccaebe5ec4" />
 
 
 Step 1--Select a pretrained model: 
