@@ -31,27 +31,23 @@ The initial MitoDecode model was trained using COS-7 mitochondrial fluorescence 
 MitoDecode can be adapted to new cell types, stress types, and imaging modalities through supervised fine-tuning. Models were fine-tuned using small number of new condition images based on the initially trained model rather than training from scratch.
 
 4. Installations
-We built MitoDecode on Python 3.12.1. The required Python packages are specified in  requirements.txt.
-
-     Environment setup
+We built MitoDecode on Python 3.12.1. The required Python packages are specified in "requirements.txt".
 
 Create a Python environment and install the required packages:
 
-     python -m venv mitodecode_env
+   python -m venv mitodecode_env
 
 Activate the environment(Windows):
 
-    mitodecode_env\Scripts\activate
-
+   mitodecode_env\Scripts\activate
 
 Install the required dependencies:
 
-pip install -r requirements.txt
-Launch the graphical user interface
-
+   pip install -r requirements.txt
+   
 After installation, launch the MitoDecode GUI using:
 
-python GUI.py
+   python GUI.py
 
 The GUI allows users to select an appropriate pretrained model, which can be download and put to the correct direction here: 
 
