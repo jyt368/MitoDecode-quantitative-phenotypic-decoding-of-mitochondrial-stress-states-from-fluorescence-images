@@ -35,19 +35,19 @@ We built MitoDecode on Python 3.12.1. The required Python packages are specified
 
 Create a Python environment and install the required packages:
 
-   python -m venv mitodecode_env
+    python -m venv mitodecode_env
 
 Activate the environment(Windows):
 
-   mitodecode_env\Scripts\activate
+    mitodecode_env\Scripts\activate
 
 Install the required dependencies:
 
-   pip install -r requirements.txt
+    pip install -r requirements.txt
    
 After installation, launch the MitoDecode GUI using:
 
-   python GUI.py
+    python GUI.py
 
 The GUI allows users to select an appropriate pretrained model, which can be download and put to the correct direction here: 
 
