@@ -49,12 +49,16 @@ After installation, launch the MitoDecode GUI using:
 
     python GUI.py
 
-The GUI allows users to select an appropriate pretrained model, which can be download and put to the correct direction here: 
+This GUI allows users to select one of our pretrained model, which can be download and put to the correct direction here: 
 
-upload a single-cell mitochondrial fluorescence image, and generate a phenotypic probability profile.
+
 
 6. Example usage
 <img width="1198" height="824" alt="image" src="https://github.com/user-attachments/assets/0724e835-c7ce-49ab-988a-7b7883bd49aa" />
 
+Upload an example single-cell mitochondrial fluorescence image from folder or drag to the image drop area.
+Select one model and click "RUN PREDICTION".
+The phenotypic probability profile will be generated on the right side.
 
+Note: Each pretrained model is designed for a specific cell type, imaging modality, and reference phenotype space. Users should select the model corresponding to the example image experimental context.
 
