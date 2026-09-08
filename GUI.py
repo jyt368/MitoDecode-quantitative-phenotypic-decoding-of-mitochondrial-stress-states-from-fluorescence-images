@@ -475,8 +475,7 @@ class MainWindow(QMainWindow):
 
         self.prediction.setStyleSheet("""
             QLabel {
-                background-color: #F7F9FA;
-                border: 2px solid #D5E0E5;
+                border: none;
                 border-radius: 10px;
                 padding: 6px;
                 color: #4A5A61;
