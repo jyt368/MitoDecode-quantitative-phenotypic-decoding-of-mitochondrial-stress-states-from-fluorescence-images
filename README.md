@@ -15,15 +15,15 @@ We designed a hybrid deep learning architecture that combines ResNet50 backbone 
 <img width="960" height="272" alt="image" src="https://github.com/user-attachments/assets/8bd28600-4f2f-4fae-a20c-3ac9fef4317b" />
 
 
-backbone: ResNet50 <br>
-transformer_layers: 4 <br>
-num_classes: 4 / 6 (non-mitochondrial stressors) <br>
-Optimizer: AdamW <br>
-Loss: Cross-entropy loss with label smoothing = 0.1 <br>
-Learning-rate scheduler: StepLR <br>
-learning_rate: 1e-4 <br>
-batch_size: 16 <br>
-epochs: 20
+      backbone: ResNet50 <br>
+      transformer_layers: 4 <br>
+      num_classes: 4 / 6 (non-mitochondrial stressors) <br>
+      Optimizer: AdamW <br>
+      Loss: Cross-entropy loss with label smoothing = 0.1 <br>
+      Learning-rate scheduler: StepLR <br>
+      learning_rate: 1e-4 <br>
+      batch_size: 16 <br>
+      epochs: 20
 
 3. Model training and fine-tuning
 The initial MitoDecode model was trained using COS-7 mitochondrial fluorescence images under four different biological states: control, FCCP-induced stress, H₂O₂-induced stress and heat-shock stress. Cells with abnormal imaging artefacts were excluded.
