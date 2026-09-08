@@ -56,11 +56,21 @@ This GUI allows users to select one of our pretrained model, which can be downlo
 6. Example usage
 <img width="1198" height="824" alt="image" src="https://github.com/user-attachments/assets/0724e835-c7ce-49ab-988a-7b7883bd49aa" />
 
+Step 1--Select a pretrained model: 
+
+COS-7 cells widefield;  <br>
+COS-7 cells confocal;  <br>
+COS-7 cells SIM; <br>
+SH-SY5Y cells with four mitochondrial stress reference phenotypes; <br>
+SH-SY5Y cells with an expanded six class reference space including ER perturbations. <br>
+
+Step 2--Load a single-cell image:
+
 Upload an example single-cell mitochondrial fluorescence image from folder or drag to the image drop area.
 
-Select one model and click "RUN PREDICTION".
+Step 3--Run prediction:
 
-The phenotypic probability profile will be generated on the right side.
+Click "RUN PREDICTION" and the phenotypic probability profile will be generated on the right side.
 
 Note: Each pretrained model is designed for a specific cell type, imaging modality, and reference phenotype space. Users should select the model corresponding to the example image experimental context.
 
