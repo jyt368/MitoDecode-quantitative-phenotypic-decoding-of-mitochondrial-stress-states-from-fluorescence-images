@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import argparse
-from transformer_4_6classes import ResNet50_ViT
+from Model_architecture_6classes import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
 from data_handler import Get_Dataset, CustomTransform, ToTensor
