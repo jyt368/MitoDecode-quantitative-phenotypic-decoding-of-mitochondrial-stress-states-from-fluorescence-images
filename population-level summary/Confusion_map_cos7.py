@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import argparse
-from transformer_4_4classes import ResNet50_ViT
+from Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
 from data_handler import Get_Dataset, CustomTransform, ToTensor
@@ -16,10 +16,10 @@ opt.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 opt.train_path=None
 opt.test_batch_size=1
 
-# recall= torch.load('Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/Code_for_publication/trained_models/COS7_widefield.pt')
-# recall= torch.load('Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/Code_for_publication/trained_models/COS7_Confocal.pt')
-recall= torch.load('Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/Code_for_publication/trained_models/COS7_SIM.pt')
-# recall= torch.load('Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/ResNet_mito_new_model/Stress Mechanism/transResNet_multitask_4classes_9patch_all_transformer4_SIM_retrain_betterreconstruction_7.pt')
+# recall= torch.load('C:/saved_model_path/COS7_widefield.pt')
+# recall= torch.load('C:/saved_model_path/COS7_Confocal.pt')
+recall= torch.load('C:/saved_model_path/COS7_SIM.pt')
+
 model= ResNet50_ViT()
 model.load_state_dict(recall)
 
@@ -33,12 +33,6 @@ model.eval()
     'Z:/Users/yj368/Mitochondria classification data/COS7/Heat/42_1h_50img.txt'
 ]'''
 
-'''group_paths = [
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Reconstructed_SIM/Control_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Reconstructed_SIM/FCCP_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Reconstructed_SIM/H2O2_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Reconstructed_SIM/Heatshock_test.txt'
-]'''
 group_paths = [
     'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Better reconstruction/Control_new_test.txt',
     'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Better reconstruction/FCCP_test.txt',
@@ -54,12 +48,6 @@ group_paths = [
     'Z:/Users/yj368/Mitochondria classification data/COS7/Confocal/Heat_shock_test_3_30img.txt'
 ]'''
 
-'''group_paths = [
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/Control_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/FCCP_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/H2O2_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/Heat_test.txt'
-]'''
 
 class_types = ['Control', 'FCCP', "H\u2082O\u2082", 'Heat Shock']
 
