@@ -36,7 +36,7 @@ def learning_curve(record_train,record_test=None):
     plt.xlabel("epoch")
     plt.ylabel("accuracy")
 
-    plt.savefig('C:/Users/yj368/ML_autofocus/Health_state_prediction/learning_curve_segmented.png')
+    plt.savefig('C:/path/to/your/local_saving/learning_curve.png')
     plt.show()
 
 def plot_loss(train_loss_values, test_loss_values=None, title="Training Loss"):
@@ -51,7 +51,7 @@ def plot_loss(train_loss_values, test_loss_values=None, title="Training Loss"):
     plt.xlabel("Epochs")
     plt.ylabel("Loss")
 
-    plt.savefig('C:/Users/yj368/ML_autofocus/Health_state_prediction/loss_curve_segmented.png')
+    plt.savefig('C:/path/to/your/local_saving/loss_curve.png')
     plt.show()
 
 def label_smooth(label,smooth_rate=0.1):
@@ -64,7 +64,7 @@ def main_model(opt, model_path=None, train_iter=None, valid_iter=None, test_iter
     model=ResNet50_ViT(num_classes=opt.num_class)
     print(model)
 
-    checkpoint=torch.load('Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/ResNet_mito_new_model/Stress Mechanism/transResNet_multitask_4classes_9patch_all_42du_transformer4.pt')
+    checkpoint=torch.load('C:/path/to/your/pretrained_model_weight.pt')
 
     pretrained_params = checkpoint
 
@@ -91,7 +91,7 @@ def main_model(opt, model_path=None, train_iter=None, valid_iter=None, test_iter
     model = model.to(opt.device)
     # print(params_to_update)
 
-    filename = 'Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/ResNet_mito_new_model/Stress Mechanism/transResNet_multitask_4classes_9patch_Fixed_2.pt'
+    filename = 'C:/path/to/your/new/saving_model_weight.pt'
     best_model_wts=copy.deepcopy(model.state_dict())
     best_acc=75.0    
 
@@ -193,8 +193,8 @@ def main_model(opt, model_path=None, train_iter=None, valid_iter=None, test_iter
         if test_acc>=best_acc:
             best_acc=test_acc
             best_model_wts=copy.deepcopy(model.state_dict())
-            state={'model':model.state_dict(),'best_acc': best_acc, 'optimizer':optimizer.state_dict(),'epoch':epoch}
-            torch.save(state,filename)
+            #state={'model':model.state_dict(),'best_acc': best_acc, 'optimizer':optimizer.state_dict(),'epoch':epoch}
+            torch.save(model.state_dict(),filename)
             print("save model")
 
         train_acclist.append(train_acc)
@@ -228,9 +228,9 @@ def settings():
     init.scheduler_step=10
     init.scheduler_gamma=0.1
     init.validation_interval=1
-    init.train_path= 'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/Fix_Train.txt'
+    init.train_path= 'C:/path/to/your/Train.txt'
     init.validate_path= None
-    init.test_path= 'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/Fix_Test.txt'
+    init.test_path= 'C:/path/to/your/Val.txt'
 
     init.device="cuda" if torch.cuda.is_available() else "cpu"
     print("device:",init.device)
@@ -253,6 +253,6 @@ if __name__ == '__main__':
     model, train_acclist, test_acclist, train_loss_valueslist, test_loss_valueslist=main_model(A, model_path, train_iter=train_iter, test_iter=test_iter)
     print("Finished Training")
 	# save model after training, final model    
-    torch.save(model, 'C:/Users/yj368/ML_autofocus/Health_state_prediction/organised training code/work for mito and lyso identification task/ResNet_mito_new_model/Stress Mechanism/4calsses.pth')
-    torch.save(model.state_dict(), 'C:/Users/yj368/ML_autofocus/Health_state_prediction/organised training code/work for mito and lyso identification task/ResNet_mito_new_model/Stress Mechanism/4calsses_params.pth')
+    torch.save(model, 'C:/path/to/your/new/saving_final_model_weight_with_accuracy.pt')
+    torch.save(model.state_dict(), 'C:/path/to/your/new/saving_final_model_weight.pt')
     
