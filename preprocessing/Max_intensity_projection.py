@@ -4,8 +4,8 @@ import tifffile as tiff
 import os
 
 # Load the stack image
-rootdata = 'Z:/Users/yj368/ERstress/Thapsigargin/20uM'
-output_root = 'Z:/Users/yj368/ERstress/Maxproj/Thapsigargin_20uM'
+rootdata = 'C:/path/to/your/raw/images'
+output_root = 'C:/path/to/your/Max_proj/images'
 for root, dirs, files in os.walk(rootdata):
         files = [f for f in files if f.endswith('.tif')]
         for i in range(len(files)):
