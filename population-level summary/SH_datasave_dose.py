@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import argparse
-from transformer_4_4classes import ResNet50_ViT
+from Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
 
@@ -84,7 +84,7 @@ def get_probabilities(model, group_paths, group_name):
 
 '''------------------- Main ------------------'''
 opt = load_opt()
-pth= 'Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/Code_for_publication/trained_models/SH_4classes.pt'
+pth= 'C:/saved_model_path/SH_4classes.pt'
 model=load_model(pth)
 
 '''group_name = ['Control', 'H2O2 10uM', 'H2O2 50uM', 'H2O2 100uM', 'H2O2 500uM', 'H2O2 1mM']
