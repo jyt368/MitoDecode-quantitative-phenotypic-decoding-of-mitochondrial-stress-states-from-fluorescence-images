@@ -1,3 +1,53 @@
 Model architecture contains ResNet50 bottleneck and self-attention blocks from transformer structure. The layer depth and class number can be modified according to user requirements.
 Data handler could process the data acquired from users, and contains data augmentation for training data and normal data processing into tensor types for validation data and test data. The labels can be changed according to user requirements for new model training.
 The training.py is available if user want to train their customised model. And it's also possible to easily add their cutom-trained model into the GUI through GUI.py with new layer depth and class number being stated.
+
+The function to map labels to stress classes need to be changed in the data_handler.py to ensure correct number of classes being classfied.
+
+For COS-7 4 classes:
+def map_labels_to_classes(label):
+    label = float(label)
+    if label == 0:
+        return 0  # Control
+    elif label == 5:
+        return 1  # FCCP
+    elif label == 3:
+        return 2  #H2O2
+    elif label == 4:
+        return 3  #Heat shock
+    else:
+        return 4
+
+For SH-SY5Y 4 classes: 
+# Control:0, FCCP:1, H2O2:2, Rotenone:3
+def map_labels_to_classes(label):
+    label = float(label)
+    if label == 0:
+        return 0  # Control
+    elif label == 1:
+        return 1  # FCCP
+    elif label == 2:
+        return 2  # H2O2
+    elif label == 3:
+        return 3  # Rotenone
+    else:
+        return 4
+
+For SH-SY5Y 6 classes: 
+# Control:0, FCCP:1, H2O2:2, Rotenone:3, Tunicamycin:4, Thapsigargin:5
+def map_labels_to_classes(label):
+    label = float(label)
+    if label == 0:
+        return 0  # Control
+    elif label == 1:
+        return 1  # FCCP
+    elif label == 2:
+        return 2  #H2O2
+    elif label == 3:
+        return 3  #Rotenone
+    elif label == 4:
+        return 4  # Tunicamycin
+    elif label == 5:
+        return 5  # Thapsigargin
+    else:
+        return 6
