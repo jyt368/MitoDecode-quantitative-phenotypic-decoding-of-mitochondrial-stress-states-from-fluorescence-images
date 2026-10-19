@@ -18,10 +18,9 @@ opt.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 opt.train_path=None
 opt.test_batch_size=1
 
-recall= torch.load('Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/Code_for_publication/trained_models/SH_6classes.pt')
+recall= torch.load('C:/saved_model_path/SH_6classes.pt')
 model= ResNet50_ViT()
 model.load_state_dict(recall)
-# print(recall['best_acc'])
 
 model.to(opt.device)
 model.eval()
@@ -62,16 +61,6 @@ with torch.no_grad():
 
 cm = confusion_matrix(y_true, y_pred)
 
-'''plt.figure(figsize=(6, 5))
-sns.heatmap(
-    cm,
-    annot=True,
-    fmt="d",
-    cmap="viridis",
-    xticklabels=class_types,
-    yticklabels=class_types
-)'''
-
 cm_norm = cm.astype(float) / cm.sum(axis=1, keepdims=True)
 
 sns.heatmap(
@@ -94,45 +83,6 @@ plt.ylabel("True Class", fontsize=12)
 plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 plt.title("Confusion Matrix of Disease Mechanism Classification")
-plt.tight_layout()
-plt.show()
-
-# ROC curve plotting
-colors = [
-    '#B8B8B8',  # Control
-    '#F0A0C0',  # Tunicamycin
-    '#8C79B8',  # H2O2
-    '#6FAF9F',   # Rotenone
-    '#6F8FBF'  # FCCP
-]
-
-plt.figure(figsize=(6,6))
-
-y_true = np.array(y_true)
-y_pred = np.array(y_pred)
-y_prob = np.array(y_prob)
-y_true_bin = label_binarize(y_true, classes=[0,1,2,3,4,5,6])
-print(y_true_bin.shape, y_prob.shape)
-for i in range(len(class_types)):
-    fpr, tpr, _ = roc_curve(y_true_bin[:, i], y_prob[:, i])
-    roc_auc = auc(fpr, tpr)
-
-    plt.plot(
-        fpr,
-        tpr,
-        color=colors[i],
-        linewidth=2,
-        label=f"{class_types[i]} (AUC = {roc_auc:.2f})"
-    )
-
-# diagonal
-plt.plot([0,1], [0,1], linestyle="--", color="gray", linewidth=1)
-
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("ROC Curve")
-plt.legend(frameon=False)
-
 plt.tight_layout()
 plt.show()
 
