@@ -71,7 +71,7 @@ def bar_plot_probabilities(all_probs, group_name, class_colors=None, points_colo
     df_long['probability'] = df_long['probability'] * 100
     
     # Save probabilities
-    output_path = "Z:/Users/yj368/Mitochondria classification data/COS7/class_probabilities_summary.xlsx"
+    output_path = "C:/data_saving_path/class_probabilities_summary.xlsx"
     df_long.to_excel(output_path, index=False)
     print(f"Saved summary to {output_path}")
 
@@ -144,7 +144,7 @@ def bar_plot_probabilities(all_probs, group_name, class_colors=None, points_colo
 
 '''---main---'''
 opt = load_opt()
-pth= 'Z:/Users/yj368/ROI isentification/Health_state_prediction/organised training code/work for mito and lyso identification task/Code_for_publication/trained_models/COS7_widefield.pt'
+pth= 'C:/saved_model_path/COS7_widefield.pt'
 model=load_model(pth)
 
 group_name = ['Control', 'FCCP', "H2O2", 'Heat Shock']
