@@ -4,7 +4,7 @@ import argparse
 from transformer_4_6classes import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
-from data_handler_224_SH_6classes import Get_Dataset, CustomTransform, ToTensor
+from data_handler import Get_Dataset, CustomTransform, ToTensor
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
