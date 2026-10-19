@@ -2,7 +2,7 @@ Model architecture contains ResNet50 bottleneck and self-attention blocks from t
 Data handler could process the data acquired from users, and contains data augmentation for training data and normal data processing into tensor types for validation data and test data. The labels can be changed according to user requirements for new model training.
 The training.py is available if user want to train their customised model. And it's also possible to easily add their cutom-trained model into the GUI through GUI.py with new layer depth and class number being stated.
 
-The function to map labels to stress classes need to be changed in the data_handler.py to ensure correct number of classes being classfied.
+If the user what to launch customised training, the function to map labels to stress classes need to be changed in the data_handler.py to ensure correct number of classes being classfied.
 
 For COS-7 4 classes:
 def map_labels_to_classes(label):
