@@ -79,8 +79,8 @@ def get_images(input_path):
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
 
-img_list ='Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/Heat/Maxproj/repeat2.txt'
-sav_pth = 'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/Fix/Heat/Indiv/repeat2'
+img_list ='C:/path/to/your/raw/images/in_txt_file.txt'
+sav_pth = 'C:/path/to/your/segmented/singlecell/images'
 img_paths = get_images(img_list)
 for input_pth in img_paths:
     input_pth = input_pth[0]    
