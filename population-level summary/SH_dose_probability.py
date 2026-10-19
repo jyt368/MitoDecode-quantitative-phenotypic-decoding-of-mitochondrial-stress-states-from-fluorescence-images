@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
 import argparse
-from transformer_4_4classes import ResNet50_ViT
+from Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
-#need to change to data_handler_224_mito_inf when testing infinitus compounds; else, use data_handler_224_mito_plot
 from data_handler import Get_Dataset, CustomTransform, ToTensor
 import matplotlib.pyplot as plt
 import seaborn as sns
