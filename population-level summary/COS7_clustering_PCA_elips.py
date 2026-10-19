@@ -210,7 +210,7 @@ def plot_pca(all_probs, group_name, class_colors=None):
 
 '''---main---'''
 opt = load_opt()
-pth= 'C:/model_save_path/COS7_widefield.pt'
+pth= 'C:/saved_model_path/COS7_widefield.pt'
 model=load_model(pth)
 
 group_name = ['Control', 'FCCP', "H2O2", 'Heat Shock']
