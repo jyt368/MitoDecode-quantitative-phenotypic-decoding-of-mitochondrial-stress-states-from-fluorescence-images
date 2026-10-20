@@ -1,11 +1,14 @@
+import sys
+sys.path.insert(1, 'C:/code_download_path/MitoDecode - main')
+
 import torch
 import torch.nn as nn
 import argparse
-from Model_architecture import ResNet50_ViT
+from main_model.Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
 
-from data_handler import Get_Dataset, CustomTransform, ToTensor
+from main_model.data_handler import Get_Dataset, CustomTransform, ToTensor
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -89,12 +92,12 @@ model=load_model(pth)
 
 '''group_name = ['Control', 'H2O2 10uM', 'H2O2 50uM', 'H2O2 100uM', 'H2O2 500uM', 'H2O2 1mM']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/10uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/50uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/100uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/500uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/1mM_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/10uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/50uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/100uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/500uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/1mM_test.txt'
 ]'''
 
 '''group_name = ['Control', 'FCCP 0.1uM', 'FCCP 0.5uM', 'FCCP 1uM', 'FCCP 5uM']
@@ -108,26 +111,26 @@ group_paths = [
 
 group_name = ['Control', 'Rotenone 0.1uM', 'Rotenone 5uM', 'Rotenone 10uM']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/0.1uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/5uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/10uM_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/0.1uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/5uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/10uM_test.txt'
 ]
 
 
 '''group_name = ['Control', 'NAC only', '500uM H2O2', '2.5mM NAC + 500uM H2O2']
 group_paths = [
-    'Z:/Users/yj368/ROI isentification/SH/NAC/24012026_NAC2.5uM/Indiv/control.txt',
-    'Z:/Users/yj368/ROI isentification/SH/NAC/24012026_NAC2.5uM/Indiv/NAC.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/500uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/NAC/NAC_H2O2_all.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/control.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/NAC.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/H2O2.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/NAC_H2O2_all.txt'
 ]'''
 
 '''group_name = ['Control','2.5uM PFFs 24 hours', '2.5uM PFFs 48hours']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/24hour_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/48hour_all.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/PFFs/24hour_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/PFFs/48hour_all.txt'
 ]'''
 
 n_classes = 4
@@ -141,4 +144,4 @@ class_colors = {
 }
 pack=get_probabilities(model, group_paths, group_name)
 export_df = pack[['group', 'p4']]
-export_df.to_excel("Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Rotenone_probability_control_1.xlsx", index=False)
+export_df.to_excel("C:/save_path/Rotenone_probability_control.xlsx", index=False)
