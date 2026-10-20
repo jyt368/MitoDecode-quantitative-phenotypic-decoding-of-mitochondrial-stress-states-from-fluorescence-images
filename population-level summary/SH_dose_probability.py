@@ -1,10 +1,13 @@
+import sys
+sys.path.insert(1, 'C:/code_download_path/MitoDecode - main')
+
 import torch
 import torch.nn as nn
 import argparse
-from Model_architecture import ResNet50_ViT
+from main_model.Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
-from data_handler import Get_Dataset, CustomTransform, ToTensor
+from main_model.data_handler import Get_Dataset, CustomTransform, ToTensor
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
