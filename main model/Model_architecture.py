@@ -2,8 +2,6 @@ import torch
 import torch.nn as nn
 import torchvision
 
-#something is wrong, num_pathches=3136 for image size after resnet is 7x7 and patch size is 4
-
 class CustomEncoder(nn.Module):
     def __init__(self, embed_dim, num_heads, mlp_dim, dropout=0.1):
         super(CustomEncoder, self).__init__()
