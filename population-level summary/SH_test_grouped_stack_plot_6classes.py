@@ -30,7 +30,6 @@ def load_model(model_path):
     recall= torch.load(model_path)
     model= ResNet50_ViT()
     model.load_state_dict(recall)
-    #print(recall['best_acc'])
     model.to(opt.device)
     model.eval()
     return model
