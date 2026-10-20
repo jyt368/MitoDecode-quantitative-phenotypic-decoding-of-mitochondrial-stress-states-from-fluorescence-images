@@ -240,12 +240,12 @@ model=load_model(pth)
 
 '''group_name = ['Control', 'H2O2 10uM', 'H2O2 50uM', 'H2O2 100uM', 'H2O2 500uM', 'H2O2 1mM']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/10uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/50uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/100uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/500uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/1mM_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/10uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/50uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/100uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/500uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/1mM_test.txt'
 ]'''
 
 '''group_name = ['Control', 'FCCP 0.1uM', 'FCCP 0.5uM', 'FCCP 1uM', 'FCCP 5uM']
@@ -259,51 +259,27 @@ group_paths = [
 
 group_name = ['Control', 'Rotenone 0.1uM', 'Rotenone 5uM', 'Rotenone 10uM']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/0.1uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/5uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/10uM_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/0.1uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/5uM.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/10uM_test.txt'
 ]
-
-
-'''group_name = ['Control', 'Tunicamycin 0.1ug', 'Tunicamycin 1ug', 'Tunicamycin 5ug', 'Tunicamycin 10ug']
-group_paths = [
-    'Z:/Users/yj368/ROI isentification/SH/Control/Indiv/Control.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/0.1ug.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/1ug.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/5ug.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/10ug_test.txt'
-]'''
 
 '''group_name = ['Control', 'NAC only', '500uM H2O2', '2.5mM NAC + 500uM H2O2']
 group_paths = [
-    'Z:/Users/yj368/ROI isentification/SH/NAC/24012026_NAC2.5uM/Indiv/control.txt',
-    'Z:/Users/yj368/ROI isentification/SH/NAC/24012026_NAC2.5uM/Indiv/NAC.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/500uM.txt',
-    'Z:/Users/yj368/ROI isentification/SH/NAC/NAC_H2O2_all.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/control.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/NAC.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/H2O2.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/NAC/NAC_H2O2_all.txt'
 ]'''
 
 '''group_name = ['Control','2.5uM PFFs 24 hours', '2.5uM PFFs 48hours']
 group_paths = [
-    'Z:/Users/yj368/ROI isentification/SH/Control/Indiv/Control.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/24hour_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/48hour_all.txt'
-]'''
-'''group_name = ['Control', '2.5uM PFFs 48hrs repeat1', '2.5uM PFFs 48hrs repeat2', '2.5uM PFFs 48hrs repeat3']
-group_paths = [
-    'Z:/Users/yj368/ROI isentification/SH/Control/Indiv/Control.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/48hours/Indiv/repeat1.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/48hours/Indiv/repeat2.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/48hours/Indiv/repeat3.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/PFFs/24hour_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/PFFs/48hour_all.txt'
 ]'''
 
-'''group_name = ['Control', '2.5uM PFFs 24hrs repeat1', '2.5uM PFFs 24hrs repeat2', '2.5uM PFFs 48hrs']
-group_paths = [
-    'Z:/Users/yj368/ROI isentification/SH/Control/Indiv/Control.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/24hours/Indiv/2.5uM_repeat1.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/24hours/Indiv/2.5uM_repeat2.txt',
-    'Z:/Users/yj368/ROI isentification/SH/PFFs/48hours/Indiv/repeat1.txt'
-]'''
 n_classes = 4
 class_types = ['Control', 'FCCP', 'H2O2', 'Rotenone']
 
