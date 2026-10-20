@@ -1,10 +1,13 @@
+import sys
+sys.path.insert(1, 'C:/code_download_path/MitoDecode - main')
+
 import torch
 import torch.nn as nn
 import argparse
-from transformer_4_6classes import ResNet50_ViT
+from main_model.Model_architecture import ResNet50_ViT   # make sure the Model_architecture number of classes have been changed to 6.
 import torchvision
 from torch.utils.data import DataLoader
-from data_handler import Get_Dataset, CustomTransform, ToTensor
+from main_model.data_handler import Get_Dataset, CustomTransform, ToTensor
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -26,12 +29,12 @@ model.to(opt.device)
 model.eval()
 
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/FCCP/Indiv/5uM_test.txt',
-    'Z:/Users/yj368/ROI isentification/SH/H2O2/correct/Indiv/1mM_test.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Rotenone/Rotenone/Actin/Indiv/50uM_test.txt',
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Tunicamycin/10ug_test2.txt',
-    'Z:/Users/yj368/ERstress/Indiv/Thapsigargin_20uM_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/FCCP/5uM_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/H2O2/1mM_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Rotenone/50uM_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Tunicamycin/10ug_test2.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Thapsigargin/Thapsigargin_20uM_test.txt'
 ]
 
 class_types = ['Control', 'FCCP', "H\u2082O\u2082", 'Rotenone', 'Tunicamycin', 'Thapsigargin']
