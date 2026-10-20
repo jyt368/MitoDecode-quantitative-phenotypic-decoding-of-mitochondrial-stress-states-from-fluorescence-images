@@ -1,10 +1,13 @@
+import sys
+sys.path.insert(1, 'C:/code_download_path/MitoDecode - main')
+
 import torch
 import torch.nn as nn
 import argparse
-from Model_architecture import ResNet50_ViT
+from main_model.Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
-from data_handler import Get_Dataset, CustomTransform, ToTensor
+from main_model.data_handler import Get_Dataset, CustomTransform, ToTensor
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -27,25 +30,25 @@ model.to(opt.device)
 model.eval()
 
 '''group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Control/unseen_control.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/FCCP_concentration/5uM_unseen.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/H2O2_concentration/100mM_unseen_50img.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Heat/42_1h_50img.txt'
+    'Z:/path/to/Mitochondria_classification_data/COS7/Control/unseen_control.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/FCCP_concentration/5uM_unseen.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/H2O2_concentration/100mM_unseen_50img.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/Heat/42_1h_50img.txt'
 ]'''
 
 group_paths = [
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Better reconstruction/Control_new_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Better reconstruction/FCCP_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Better reconstruction/H2O2_test.txt',
-    'Z:/Users/yj368/ROI isentification/healthy_unhealthy_cells/SIM_retrain/Better reconstruction/Heatshock_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/COS7/SIM/Control_new_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/SIM/FCCP_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/SIM/H2O2_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/SIM/Heatshock_test.txt'
 ]
 
 
 '''group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Confocal/Control_test_2_30img.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Confocal/FCCP_test_30img.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Confocal/H2O2_test_30img.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Confocal/Heat_shock_test_3_30img.txt'
+    'Z:/path/to/Mitochondria_classification_data/COS7/Confocal/Control_test_2_30img.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/Confocal/FCCP_test_30img.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/Confocal/H2O2_test_30img.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/Confocal/Heat_shock_test_3_30img.txt'
 ]'''
 
 
