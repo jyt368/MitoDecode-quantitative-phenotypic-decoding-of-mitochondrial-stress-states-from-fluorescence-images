@@ -1,10 +1,13 @@
+import sys
+sys.path.insert(1, 'C:/code_download_path/MitoDecode - main')
+
 import torch
 import torch.nn as nn
 import argparse
-from Model_architecture import ResNet50_ViT
+from main_model.Model_architecture import ResNet50_ViT
 import torchvision
 from torch.utils.data import DataLoader
-from data_handler import Get_Dataset, CustomTransform, ToTensor
+from main_model.data_handler import Get_Dataset, CustomTransform, ToTensor
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -215,10 +218,10 @@ model=load_model(pth)
 
 group_name = ['Control', 'FCCP', "H2O2", 'Heat Shock']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Control/unseen_control.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/FCCP_concentration/5uM_unseen.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/H2O2_concentration/100mM_unseen_50img.txt',
-    'Z:/Users/yj368/Mitochondria classification data/COS7/Heat/42_1h_50img.txt'
+    'Z:/path/to/Mitochondria_classification_data/COS7/Control/unseen_control.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/FCCP_concentration/5uM_unseen.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/H2O2_concentration/100mM_unseen_50img.txt',
+    'Z:/path/to/Mitochondria_classification_data/COS7/Heat/42_1h_50img.txt'
 ]
 
 
