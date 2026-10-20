@@ -1,10 +1,13 @@
+import sys
+sys.path.insert(1, 'C:/code_download_path/MitoDecode - main')
+
 import torch
 import torch.nn as nn
 import argparse
-from Model_architecture_6classes import ResNet50_ViT
+from main_model.Model_architecture import ResNet50_ViT   # make sure the Model_architecture number of classes have been changed to 6.
 import torchvision
 from torch.utils.data import DataLoader
-from data_handler import Get_Dataset, CustomTransform, ToTensor
+from main_model.data_handler import Get_Dataset, CustomTransform, ToTensor
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -159,18 +162,18 @@ model=load_model(pth)
 
 '''group_name = ['Control', 'Tunicamycin 0.1ug/ml', 'Tunicamycin 1ug/ml', 'Tunicamycin 5ug/ml', 'Tunicamycin 10ug/ml']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/0.1ug.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/1ug.txt',
-    'Z:/Users/yj368/ROI isentification/SH/Tunicamycin/Tunicamycin/Actin/Indiv/5ug.txt',
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Tunicamycin/10ug_test2.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Tunicamycin/0.1ug.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Tunicamycin/1ug.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Tunicamycin/5ug.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Tunicamycin/10ug_test2.txt'
 ]'''
 
 group_name = ['Control', 'Thapsigargin 10uM', 'Thapsigargin 20uM']
 group_paths = [
-    'Z:/Users/yj368/Mitochondria classification data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
-    'Z:/Users/yj368/ERstress/Indiv/Thapsigargin_10uM_test.txt',
-    'Z:/Users/yj368/ERstress/Indiv/Thapsigargin_20uM_test.txt'
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Control/Indiv2/Control_test_all.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Thapsigargin/Thapsigargin_10uM_test.txt',
+    'Z:/path/to/Mitochondria_classification_data/SHSY5Y/Thapsigargin/Thapsigargin_20uM_test.txt'
 ]
 
 
